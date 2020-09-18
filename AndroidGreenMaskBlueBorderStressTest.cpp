@@ -1,23 +1,18 @@
-#include "AndroidGreenMaskBlueBorder.hpp"
+#include "AGMBB.hpp"
 
+#include <chrono>
+#include <thread>
 
-#define LOG_TAG "AndroidGreenMaskBlueBorder"
+#define LOG_TAG "AndroidGreenMaskBlueBorderStressTest"
 
 
 int main() {
     for (;;) {
-        AndroidGreenMaskBlueBorder androidGreenMaskBlueBorder;
+        AGMBB::get().show();
+        std::this_thread::sleep_for(std::chrono::seconds(3)); // keep it
+        AGMBB::get().disMiss();
+        std::this_thread::sleep_for(std::chrono::seconds(3)); // keep it
 
-        if (NO_ERROR != androidGreenMaskBlueBorder.init()) {
-            ALOGI("What the hell?!");
-            return -1;
-        }
-
-        androidGreenMaskBlueBorder.drawOnce();
-
-        usleep(1000000 * 3/*s*/); // keep it
-
-        androidGreenMaskBlueBorder.deInit();
     }
     return 0;
 }

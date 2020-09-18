@@ -15,6 +15,21 @@ using namespace android;
 
 class AndroidGreenMaskBlueBorder {
 public:
+    void show() {
+        if (surfaceControl_ != nullptr) {
+            SurfaceComposerClient::openGlobalTransaction();
+            surfaceControl_->setLayer(0x40000000);
+            SurfaceComposerClient::closeGlobalTransaction();
+        }
+    }
+    void disMiss() {
+        if (surfaceControl_ != nullptr) {
+            SurfaceComposerClient::openGlobalTransaction();
+            surfaceControl_->setLayer(0x00000000);
+            SurfaceComposerClient::closeGlobalTransaction();
+        }
+    }
+
     AndroidGreenMaskBlueBorder() : surfaceComposerClient_(new SurfaceComposerClient()) {}
     ~AndroidGreenMaskBlueBorder() { deInit(); }
     status_t init() {
@@ -29,7 +44,8 @@ public:
         surfaceControl_ = surfaceComposerClient_->createSurface(String8(__FILE__), displayInfo.w, displayInfo.h, PIXEL_FORMAT_RGBA_8888, 0);
 
         SurfaceComposerClient::openGlobalTransaction();
-        surfaceControl_->setLayer(0x40000000);
+        surfaceControl_->setLayer(0x00000000); // invisible
+        //surfaceControl_->setLayer(0x40000000);
         surfaceControl_->setAlpha(.5);
         //control->setPosition(100, 100);
         SurfaceComposerClient::closeGlobalTransaction();
@@ -85,12 +101,14 @@ public:
     }
 
     void drawOnce() {
-        glClearColor(0, .3, 0, .3);
-        glClear(GL_COLOR_BUFFER_BIT);
+        if (needGreenMaks_) {
+            glClearColor(0, .3, 0, .3);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         auto theScale = .9999f;
-        auto theWidth = 10;
+        auto theWidth = 14;
 
         GLfloat _4lines[] = {
                 -theScale,-theScale,+theScale,-theScale,
@@ -100,14 +118,14 @@ public:
         };
 
         GLfloat _8colors[] = {
-                                0.0f, 0.0f, 1.0f, 1.0f,
-                                0.0f, 0.0f, 1.0f, 1.0f,
-                                0.0f, 0.0f, 1.0f, 1.0f,
-                                0.0f, 0.0f, 1.0f, 1.0f,
-                                0.0f, 0.0f, 1.0f, 1.0f,
-                                0.0f, 0.0f, 1.0f, 1.0f,
-                                0.0f, 0.0f, 1.0f, 1.0f,
-                                0.0f, 0.0f, 1.0f, 1.0f
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f,
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f,
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f,
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f,
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f,
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f,
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f,
+                                (float)0x31/ 0xFF, (float)0x96/ 0xFF, (float) 0xFA/0xFF, 1.0f
         };
         glLineWidth(theWidth);
         glShadeModel(GL_SMOOTH);
@@ -148,5 +166,6 @@ private:
     EGLDisplay  display_;
     EGLDisplay  context_;
     EGLDisplay  eglDisplaySurface_;
+    bool needGreenMaks_ = false;
 };
 

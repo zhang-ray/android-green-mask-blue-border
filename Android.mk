@@ -1,7 +1,8 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES:= AndroidGreenMaskBlueBorderStressTest.cpp 
+LOCAL_SRC_FILES:= AndroidGreenMaskBlueBorderStressTest.cpp \
+    AGMBB.cpp 
 
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 
